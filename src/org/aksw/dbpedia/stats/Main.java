@@ -73,7 +73,6 @@ public class Main {
             try {
 
                 scanner = new BufferedReader(new InputStreamReader(new GZIPInputStream(fis))); //log files are gziped
-                //File fileRead = new File(new InputStreamReader(new GZIPInputStream(fis)));
                 String line = null;
 
                 System.out.println("BEGIN READING FILE " + file);
@@ -95,10 +94,10 @@ public class Main {
 
                     //analyzing only sparql select queries requisitions
                     Pattern findSelect = Pattern.compile("(\\/sparql\\?).*(\\&query\\=)|&*(SELECT)");
-                    //Matcher match1 = findSelect.matcher(query);
+                    Matcher match1 = findSelect.matcher(query);
                     Pattern findPropertyLD = Pattern.compile("(^\\/property\\/.*)");
                     Matcher matchPropLD = findPropertyLD.matcher(query);
-                    /*if (match1.find()) {
+                    if (match1.find()) {
                         totalQueries = totalQueries + 1; //query found! +1
 
                         //System.out.println("#QUERY " + i + "#"); //for debugging
@@ -126,7 +125,7 @@ public class Main {
                         Pattern findAbusiveQuery3 = Pattern.compile("\\(ID\\|id\\|Id\\|image\\|Image\\|gray\\|dorlands\\|wiki\\|lat\\|long\\|color\\|info\\|Info\\|homepage\\|map\\|Map\\|updated\\|Updated\\|logo\\|Logo\\|pushpin\\|label\\|Label\\|photo\\|Photo\\)");
                         Matcher matchAbusiveQuery3 = findAbusiveQuery3.matcher(query);
                         if (selectPos < 0 || matchAbusiveQuery1.find() || matchAbusiveQuery2.find() || matchAbusiveQuery3.find()) {
-                            totalQueries = totalQueries - 1;
+                            totalQueries = totalQueries - 1; //query does not fits :( -1
                             continue;
                         }
                         query = query.substring(selectPos, query.length());
@@ -159,8 +158,7 @@ public class Main {
                             } //end of else if
                         }   //end of for each
                     } //end of if match select
-                    else */
-                    if(matchPropLD.find()) { //find properties that were requested over LD
+                    else if(matchPropLD.find()) { //find properties that were requested over LD
                         String propLD = query.replaceAll("(^\\/property\\/|\\/$|\\&.*|\\?.*)", "");
                         if (propsLD.containsKey(propLD)) {
                             propsLD.put(propLD, propsLD.get(propLD) + 1);
@@ -184,18 +182,18 @@ public class Main {
 
         try {
             //write separated output files for class and property usage
-            //File fileOut = new File("/home/gpublio/dbpedia-stats/classes_usage.txt");
-            //File fileOut2 = new File("/home/gpublio/dbpedia-stats/properties_usage.txt");
+            File fileOut = new File("/home/gpublio/dbpedia-stats/classes_usage.txt");
+            File fileOut2 = new File("/home/gpublio/dbpedia-stats/properties_usage.txt");
             File fileOut3 = new File("/home/gpublio/dbpedia-stats/propertiesLD_usage.txt");
-            //FileOutputStream fos = new FileOutputStream(fileOut);
-            //FileOutputStream fos2 = new FileOutputStream(fileOut2);
+            FileOutputStream fos = new FileOutputStream(fileOut);
+            FileOutputStream fos2 = new FileOutputStream(fileOut2);
             FileOutputStream fos3 = new FileOutputStream(fileOut3);
-            //PrintWriter pw = new PrintWriter(fos);
-            //PrintWriter pw2 = new PrintWriter(fos2);
+            PrintWriter pw = new PrintWriter(fos);
+            PrintWriter pw2 = new PrintWriter(fos2);
             PrintWriter pw3 = new PrintWriter(fos3);
 
 
-            /*for (String cls : classes.keySet()) {
+            for (String cls : classes.keySet()) {
                 int value = classes.get(cls);
                 pw.println(cls + "," + value);
             }
@@ -203,19 +201,19 @@ public class Main {
             for (String prp : props.keySet()) {
                 int value = props.get(prp);
                 pw2.println(prp + "," + value);
-            }*/
+            }
 
             for (String prp : propsLD.keySet()) {
                 int value = propsLD.get(prp);
                 pw3.println(prp + "," + value);
             }
 
-            /*pw.flush();
+            pw.flush();
             pw.close();
             fos.close();
             pw2.flush();
             pw2.close();
-            fos2.close();*/
+            fos2.close();
             pw3.flush();
             pw3.close();
             fos3.close();
